@@ -1,0 +1,46 @@
+body {
+	background: #eee196;
+	font: 13px Helvetica, Arial, sans-serif;
+}
+
+body * {
+	box-sizing: border-box;
+}
+
+#page {
+	background: white;
+	overflow: hidden;
+	width: 90%;
+	margin: 0 auto;
+	padding: 10px
+}
+
+aside {
+	float: left;
+	width: 25%;
+	padding: 20px;
+	padding-top: 90px;
+}
+
+main {
+	float: right;
+	width: 75%;
+	padding: 20px;
+}
+
+fieldset {
+	padding: 0;
+	margin: 0;
+	border: none;
+}
+
+ul { 
+	list-style: none; 
+	padding: 0;
+}
+
+main li {	padding: 15px 0 15px 0; }
+
+main li + li {border-top: 1px solid grey; }
+
+main li:hover {	background: lightgreen; }
