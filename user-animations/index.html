@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Animation Sensation</title>
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="script.js"></script>
+</head>
+<body>
+	<main>
+		<section id="canvas">
+			
+		</section>
+		<section id="controls">
+			<a id="start" href="">Start</a>
+			<a id="stop" href="">Stop</a>
+		</section>
+		<section id="options">
+			<form>
+				<fieldset>
+					<h1>Type</h1>
+					<ul>
+						<li>
+							<label><input type="radio" value="square" name="shape">Square</label>
+						</li>
+						<li>
+							<label><input type="radio" value="circle" name="shape">Circle</label>
+						</li>
+						<li>
+							<label><input type="radio" value="star" name="shape">Star</label>
+						</li>
+					</ul>
+
+					<dl>
+						<dt>Starting Point</dt>
+						<dd><input type="number" name="start_x" placeholder="x"></dd>
+						<dd><input type="number" name="start_y" placeholder="y"></dd>
+					</dl>
+					<dl>
+						<dt>Ending Point</dt>
+						<dd><input type="number" name="end_x" placeholder="x"></dd>
+						<dd><input type="number" name="end_y" placeholder="y"></dd>
+					</dl>
+
+					<input type="submit" value="Add" name="">
+				</fieldset>
+			</form>
+		</section>
+	</main>
+</body>
+</html>
