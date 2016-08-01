@@ -1,12 +1,16 @@
 // $(function() {
 	
-	// CACHED ELEMENTS
+	/////////////////////
+	// CACHED ELEMENTS //
+	/////////////////////
 	var $letters = $("#spaces"),
 			$guesses = $("#guesses"),
 			$message = $("#message"),
 			$apples = $("#apples");
-	
-	// Functions
+
+	///////////////
+  // Functions //
+  ///////////////
 	var randomWord = function() {
 		var words = ["soul", "charzard", "pokemon", "pikachu", "aerosol", "magecraft"];
 	
@@ -17,51 +21,27 @@
 		};
 	}();
 
-	// Objects
-	var Game = {
-		createBlanks: function () {
-			var spaces = (new Array(this.word.length + 1)).join("<span>   </span>");
-
-			$letters.find("span").remove();
-			$letters.append(spaces);
-			Game.$spaces = $("#spaces span");
-		}, 
-
-		displayMessage: function(text) {
-			$message.text()
-		},
-
-		init: function() {
-			this.createBlanks();
-		},
+	function newGame() {
+		var new_game = Object.create(Guessing_Game);
+		new_game.word 						= randomWord();														
+		new_game.letters_in_word 	= new_game.word.split("");
+		new_game.letters_guessed = [];
+		new_game.correct_spaces 	= 0;
+		new_game.createBlanks();
+		$("#guesses span").remove();
+		return new_game;
 	}
 
-	var Guessing_Game = Object.create(Game);
-	Guessing_Game.word 						= randomWord();
-	Guessing_Game.incorrect 			= 0;
-	Guessing_Game.max_incorrect 	= 6;
-	Guessing_Game.letters_guessed = [];
-	Guessing_Game.correct_spaces 	= 0;
-	Guessing_Game.reset 					= function() {};
-	Guessing_Game.new_game        = function() {};
-	Guessing_Game.word_check      = function() {
-																		if (!this.word) { $message.text("I am out of words")}
-																	};
-	Guessing_Game.letters_in_word = Guessing_Game.word.split("");
-
-	var current_game = Object.create(Guessing_Game);
-  
   // Checks keycode is a letter between a - z
 	function isAlphaCharacter(keycode) {
 		return (keycode >= 97 & keycode <= 122)
 	}
 
-	function notBeenGuessed(keycode) {
-		return !(current_game.letters_guessed.indexOf(keycode) > -1);
+	function notBeenGuessed(char) {
+		return !(current_game.letters_guessed.indexOf(char) > -1);
 	}
 
-	function letterInWord(keycode) {
-		var char = String.fromCharCode(keycode);
+	function letterInWord(char) {
 		return (current_game.letters_in_word.indexOf(char) > -1);
 	}
 
@@ -76,37 +56,75 @@
 		return temp;
 	}
 
-	function fillBlanks(keycode) {
-		var char = String.fromCharCode(keycode);
-
-		// find indexOf character(s) in word
+	function fillBlanks(char) {
 		var indexes = indexesOf(char);
 
 		// Use that index to access the spans and inject character into text of the span
-		var $spans = $("#spaces span");
+		var $word_spans = $("#spaces span");
 
-		$spans.each( function(index, obj) {
-			indexes.forEach( function(ele) {
-				if (index === ele) {
-					$(this).text(char);
-				}
-			});
+		indexes.forEach( function(idx) {
+			$word_spans.eq(idx).text(char);
+			current_game.correct_spaces += 1;
 		});
+
 	}
 
-	function addToGuesses(keycode) {
+	function addToGuesses(char) {
 		// make this show up in the guessed section
+		var $guesses= $("#guesses")
+		$guesses.append("<span>" + char + "</span>");
 	}
+
+	function setGameStatus(status) {
+		$(document.body).removeClass();
+		if (status) {
+			$(document.body).addClass(status);
+		}
+	}
+	
+	/////////////
+	// Objects //
+	/////////////
+	var Game = {
+		createBlanks: function () {
+			var spaces = (new Array(this.word.length + 1)).join("<span></span>");
+
+			$letters.find("span").remove();
+			$letters.append(spaces);
+			Game.$spaces = $("#spaces span");
+		}, 
+
+		displayMessage: function(text) {
+			$message.text(text);
+		},
+
+		
+	}
+
+	var Guessing_Game = Object.create(Game);
+	Guessing_Game.incorrect 			= 0;
+	Guessing_Game.max_incorrect 	= 6;
+	Guessing_Game.word_check      = function() {
+																		if (!this.word) { $message.text("I am out of words")}
+																	};
+  Guessing_Game.gameOver 				= function() {
+																		return (this.incorrect >= this.max_incorrect);
+																	};
+	Guessing_Game.victory					= function () {
+																		return (this.correct_spaces >= this.letters_in_word.length)
+																	};
 
   // Event Handlers
- 	$(document).keypress(function(event) {
- 		var key = event.keyCode
- 		if (isAlphaCharacter(key) & notBeenGuessed(key)) {
- 			current_game.letters_guessed.push(key);
- 			addToGuesses(key);
+ 	$(document).on("keypress", document, function(event) {
+ 		var key = event.keyCode;
+ 		var char = String.fromCharCode(key);
 
- 			if (letterInWord(key)) {
- 				fillBlanks(key);
+ 		if (isAlphaCharacter(key) & notBeenGuessed(char)) {
+ 			current_game.letters_guessed.push(char);
+ 			addToGuesses(char);
+
+ 			if (letterInWord(char)) {
+ 				fillBlanks(char);
  			} else {
  				$apples.removeClass("guess_" + current_game.incorrect);
  				current_game.incorrect += 1;
@@ -114,13 +132,27 @@
  			}
  		}
 
+ 		if (current_game.gameOver()) {
+ 			current_game.displayMessage("Game Over. Do you want to restart?");
+ 			$("#message").append("<br><a href='#' id='restart'>Restart</a>");
+ 			setGameStatus('defeat');
+ 		} else if (current_game.victory()) {
+ 			current_game.displayMessage("Victory. Do you want to restart?");
+ 			$("#message").append("<br><a href='#' id='restart'>Restart</a>");
+ 			setGameStatus('victory');
+ 		}
+  });
+
+  $(document).on("click", '#restart', function(event) {
+  	event.preventDefault();
+  	// Clean up
+  	$apples.removeClass("guess_" + current_game.incorrect);
+  	$message.text("");
+
+  	current_game = newGame();
   });
 // });
 
-// If the guess matches at least one letter in the word, output each instance of the guessed letter in the respective blank spaces
-// If the guess is not a match, increment the incorrect guess count and change the class name on the apples container to change the count of apples
-// If the letter has already been guessed, ignore it
-// When a letter is guessed, write it to the guesses container
-// If the number of incorrect guesses matches the number of guesses available for a game, 6, the game is over. Display a message and a link to start a new game. Unbind the keypress event.
-// If all of the letters of the word have been revealed, display a win message and a link to start a new game. Unbind the keypress event.
-// When new game is clicked, a new game is constructed. The class on the apples container gets reset to show 6 apples again.
+// !!! TODOS
+// Refactor functions into game methods
+// background persists between games (fix it so it resets to grey between games)

@@ -14,12 +14,16 @@ main {
 h2 { display: block; }
 
 span { 
-	border-bottom: 2px solid black; 
-	border-radius: 15%;
 	width: 40px;
 	height: 40px;
 	display: inline-block;
 	margin-right: 12px;
+	text-align: center;
+}
+
+#spaces span {
+	border-bottom: 2px solid black; 
+	border-radius: 15%;
 }
 
 #tree {
@@ -47,7 +51,7 @@ span {
 #apples.guess_3 { background-position: 0 -966px; }
 #apples.guess_4 { background-position: 0 -1288px; }
 #apples.guess_5 { background-position: 0 -1610px; }
-#apples.guess_6 { display: hide;}
+#apples.guess_6 { display: none;}
 
 .victory { background-color: green; }
 .defeat { background-color: red; }
